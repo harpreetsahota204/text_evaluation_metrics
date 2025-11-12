@@ -3,5 +3,18 @@ description: Text evaluation metrics for VLM OCR (ANLS, Exact Match, CER, WER)
 version: 1.0.0
 fiftyone:
   version: ">=0.23.0"
+url: "https://github.com/harpreetsahota204/text-evaluation-metrics"
+license: "Apache 2.0"
+author: "Harpreet Sahota"
+python_version: ">=3.8"
+
 operators:
-  - evaluate_text
+  - compute_anls
+  - compute_exact_match
+  - compute_normalized_similarity
+  - compute_cer
+  - compute_wer
+
+dependencies:
+  - "fiftyone>=0.23.0"
+  - "python-Levenshtein>=0.12.0"
