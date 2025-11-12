@@ -16,6 +16,12 @@ Operator plugin for evaluating text fields (StringFields) in FiftyOne datasets w
 pip install python-Levenshtein
 ```
 
+Install the plugin:
+
+```bash
+fiftyone plugins download https://github.com/harpreetsahota204/text_evaluation_metrics
+```
+
 ## Available Operators
 
 ### 1. Compute ANLS
@@ -186,54 +192,7 @@ print(f"High-confidence samples ANLS: {result['mean_anls']:.3f}")
 
 ### Delegated Execution
 
-For large datasets or long-running operations, request delegated execution:
-
-```python
-# Request delegation (runs in background)
-result = anls_op(
-    dataset,
-    pred_field="prediction",
-    gt_field="ground_truth",
-    delegate=True,  # Request background execution
-)
-
-# Note: Automatic delegation happens for datasets > 1000 samples
-```
-
-## Example Workflow
-
-```python
-import fiftyone as fo
-
-# Create sample dataset
-dataset = fo.Dataset("text_eval_demo")
-
-samples = [
-    fo.Sample(
-        filepath="invoice_1.jpg",
-        ground_truth="Invoice #12345",
-        prediction="Invoice 12345"  # Missing '#'
-    ),
-    fo.Sample(
-        filepath="invoice_2.jpg",
-        ground_truth="Total: $1,234.56",
-        prediction="Total: $1,234.56"  # Perfect match
-    ),
-    fo.Sample(
-        filepath="receipt_1.jpg",
-        ground_truth="Thank you for your purchase",
-        prediction="Thank you for youre purchase"  # Typo
-    ),
-]
-
-dataset.add_samples(samples)
-
-# Launch app
-session = fo.launch_app(dataset)
-
-# Use the Operator Browser to compute metrics
-# Press ` key, search "Compute ANLS", fill in fields, execute
-```
+This won't be needed as these are fast operations.
 
 ## Metric Descriptions
 
@@ -302,9 +261,13 @@ dataset.delete_sample_fields(eval_fields)
 ## Best Practices
 
 1. **Start with ANLS**: It's the standard metric for VLM OCR tasks
+
 2. **Use Exact Match as a secondary metric**: Provides a strict accuracy baseline
+
 3. **Enable delegation for large datasets**: Operators auto-delegate for >1000 samples
+
 4. **Organize output fields**: Use consistent prefixes (e.g., `prediction_anls`, `prediction_cer`)
+
 5. **Evaluate on views**: Use FiftyOne's filtering to evaluate specific subsets
 
 ## Advanced Usage
@@ -354,38 +317,6 @@ for model_field in models:
 
 # Compare in app
 session = fo.launch_app(dataset)
-```
-
-## Troubleshooting
-
-### "No StringFields Found" Warning
-
-Ensure your dataset has StringFields:
-
-```python
-# Add StringFields if needed
-dataset.add_sample_field("prediction", fo.StringField)
-dataset.add_sample_field("ground_truth", fo.StringField)
-```
-
-### Import Error: "No module named 'Levenshtein'"
-
-Install the required dependency:
-
-```bash
-pip install python-Levenshtein
-```
-
-### Performance Issues
-
-For large datasets (>10,000 samples), the operator automatically delegates execution to a background process. You can also manually create batches:
-
-```python
-# Process in chunks
-batch_size = 5000
-for i in range(0, len(dataset), batch_size):
-    batch_view = dataset.skip(i).limit(batch_size)
-    result = anls_op.execute(batch_view, params={...})
 ```
 
 ## License
