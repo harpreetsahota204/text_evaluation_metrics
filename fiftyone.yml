@@ -1,0 +1,14 @@
+name: "@harpreetsahota/text-evaluation-metrics"
+description: VLM OCR text evaluation metrics (ANLS, Exact Match, Similarity, CER/WER)
+version: 1.0.0
+fiftyone:
+  version: ">=1.3.0"
+url: https://github.com/harpreetsahota/text-evaluation-metrics
+license: Apache 2.0
+operators:
+  - anls
+  - exact_match
+  - normalized_similarity
+  - cer
+  - wer
+
