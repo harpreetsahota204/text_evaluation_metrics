@@ -64,12 +64,16 @@ class ExactMatchMetric(foo.EvaluationMetric):
         """
         # Get evaluation configuration
         eval_key = results.key
-        gt_field = results.config.gt_field
-        pred_field = results.config.pred_field
         
-        # Extract text strings from samples
-        gt_strings = samples.values(gt_field)
-        pred_strings = samples.values(pred_field)
+        # Extract text strings from TextResults or samples
+        if hasattr(results, 'gt_texts') and hasattr(results, 'pred_texts'):
+            gt_strings = results.gt_texts
+            pred_strings = results.pred_texts
+        else:
+            gt_field = results.config.gt_field
+            pred_field = results.config.pred_field
+            gt_strings = samples.values(gt_field)
+            pred_strings = samples.values(pred_field)
         
         # Compute exact match for each sample
         scores = []
