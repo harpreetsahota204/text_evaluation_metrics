@@ -24,7 +24,7 @@ def _handle_calling(
     delegate,
 ):
     """Handle calling the operator programmatically."""
-    ctx = dict(view=sample_collection.view())
+    ctx = dict(dataset=sample_collection)
     params = dict(
         pred_field=pred_field,
         gt_field=gt_field,

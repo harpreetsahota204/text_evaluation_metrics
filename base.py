@@ -88,6 +88,13 @@ class BaseTextEvaluationOperator(foo.Operator):
         return sum(valid) / len(valid) if valid else None
     
     def resolve_delegation(self, ctx):
-        """Delegate for large datasets."""
-        return len(ctx.target_view()) > 1000
+        """Implement this method if you want to programmatically force
+        this operation to be delegated or executed immediately.
+        
+        Returns:
+            whether the operation should be delegated (True), run
+            immediately (False), or None to defer to
+            resolve_execution_options() to specify the available options
+        """
+        return ctx.params.get("delegate", False)
 
