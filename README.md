@@ -4,14 +4,6 @@
 
 Operator plugin for evaluating text fields (StringFields) in FiftyOne datasets with standard VLM OCR metrics.
 
-## Features
-
-- **Modular Design**: Each metric is a separate operator
-- **Flexible**: Choose exactly which metrics you need
-- **Intelligent Defaults**: Smart field name suggestions
-- **Delegated Execution**: Automatic delegation for large datasets (>1000 samples)
-- **Clean Interface**: Simple, focused UI for each metric
-
 ## Installation
 
 ```bash
@@ -24,42 +16,96 @@ Install the plugin:
 fiftyone plugins download https://github.com/harpreetsahota204/text_evaluation_metrics
 ```
 
+## Overview
+
+This plugin provides five text evaluation metrics for comparing predictions against ground truth:
+
+| Metric | Description | Use Case | Range |
+|--------|-------------|----------|-------|
+| **ANLS** | Average Normalized Levenshtein Similarity with threshold | Primary OCR metric for VLMs, robust to minor errors | 0.0-1.0 |
+| **Exact Match** | Binary perfect match | Strict evaluation (form fields, IDs) | 0.0 or 1.0 |
+| **Normalized Similarity** | Continuous Levenshtein similarity without threshold | Fine-grained analysis and ranking | 0.0-1.0 |
+| **CER** | Character Error Rate | Character-level error analysis | 0.0+ (lower is better) |
+| **WER** | Word Error Rate | Word-level error analysis | 0.0+ (lower is better) |
+
 ## Available Operators
 
-### 1. Compute ANLS
-**Average Normalized Levenshtein Similarity** - Primary metric for VLM OCR evaluation
+### 1. ComputeANLS (`compute_anls`)
+**Average Normalized Levenshtein Similarity** - Standard metric for OCR evaluation, normalizes edit distance by string length and applies a configurable threshold (default: 0.5)
 
-- Configurable threshold (default: 0.5)
-- Case-sensitive option
-- Standard metric used in OCR benchmarks
+```python
+operator = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_anls")
+result = operator(
+    dataset,
+    pred_field="prediction",
+    gt_field="ground_truth",
+    output_field="anls_score",  # optional, defaults to "{pred_field}_anls"
+    threshold=0.5,  # ANLS threshold (0.0-1.0)
+    case_sensitive=False,
+    delegate=False
+)
+```
 
-### 2. Compute Exact Match
-**Binary exact match accuracy** between prediction and ground truth
+### 2. ComputeExactMatch (`compute_exact_match`)
+**Binary exact match accuracy** - Returns 1.0 only for perfect matches, ideal for strict evaluation where partial credit isn't appropriate
 
-- Case-sensitive option
-- Whitespace stripping option
-- Returns 1.0 for perfect match, 0.0 otherwise
+```python
+operator = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_exact_match")
+result = operator(
+    dataset,
+    pred_field="prediction",
+    gt_field="ground_truth",
+    output_field="exact_match",  # optional, defaults to "{pred_field}_exact_match"
+    case_sensitive=False,
+    strip_whitespace=True,
+    delegate=False
+)
+```
 
-### 3. Compute Normalized Similarity
-**Continuous similarity score** (0.0-1.0) without threshold
+### 3. ComputeNormalizedSimilarity (`compute_normalized_similarity`)
+**Continuous similarity score** - Full range (0.0-1.0) without threshold, useful for fine-grained analysis and ranking samples by similarity
 
-- No threshold applied
-- Full range of similarity values
-- Useful for ranking and analysis
+```python
+operator = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_normalized_similarity")
+result = operator(
+    dataset,
+    pred_field="prediction",
+    gt_field="ground_truth",
+    output_field="similarity",  # optional, defaults to "{pred_field}_similarity"
+    case_sensitive=False,
+    delegate=False
+)
+```
 
-### 4. Compute CER
-**Character Error Rate** - Ratio of character edits needed
+### 4. ComputeCER (`compute_cer`)
+**Character Error Rate** - Ratio of character-level edits needed to transform prediction into ground truth (lower is better), language-agnostic
 
-- Based on Levenshtein distance at character level
-- Lower is better (0.0 = perfect)
-- Case-sensitive by default
+```python
+operator = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_cer")
+result = operator(
+    dataset,
+    pred_field="prediction",
+    gt_field="ground_truth",
+    output_field="cer",  # optional, defaults to "{pred_field}_cer"
+    case_sensitive=True,
+    delegate=False
+)
+```
 
-### 5. Compute WER
-**Word Error Rate** - Ratio of word edits needed
+### 5. ComputeWER (`compute_wer`)
+**Word Error Rate** - Ratio of word-level edits needed to transform prediction into ground truth (lower is better), commonly used in speech recognition
 
-- Based on Levenshtein distance at word level
-- Lower is better (0.0 = perfect)
-- Case-sensitive by default
+```python
+operator = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_wer")
+result = operator(
+    dataset,
+    pred_field="prediction",
+    gt_field="ground_truth",
+    output_field="wer",  # optional, defaults to "{pred_field}_wer"
+    case_sensitive=True,
+    delegate=False
+)
+```
 
 ## Usage
 
@@ -116,149 +162,10 @@ result = anls_op(dataset, pred_field="prediction", gt_field="ground_truth",
                  output_field="prediction_anls")
 ```
 
-### Programmatic Batch Evaluation
-
-Run multiple metrics at once using the clean `__call__` interface:
-
-```python
-import fiftyone as fo
-import fiftyone.operators as foo
-
-dataset = fo.load_dataset("your_dataset")
-
-# Get operators
-anls_op = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_anls")
-em_op = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_exact_match")
-cer_op = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_cer")
-wer_op = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_wer")
-
-# Call operators directly - clean and readable!
-results = {
-    "anls": anls_op(
-        dataset,
-        pred_field="prediction",
-        gt_field="ground_truth",
-        threshold=0.5,
-    ),
-    "exact_match": em_op(
-        dataset,
-        pred_field="prediction",
-        gt_field="ground_truth",
-    ),
-    "cer": cer_op(
-        dataset,
-        pred_field="prediction",
-        gt_field="ground_truth",
-    ),
-    "wer": wer_op(
-        dataset,
-        pred_field="prediction",
-        gt_field="ground_truth",
-    ),
-}
-
-# Print summary
-print(f"ANLS: {results['anls']['mean_anls']:.3f}")
-print(f"Exact Match: {results['exact_match']['accuracy']:.3f}")
-print(f"CER: {results['cer']['mean_cer']:.3f}")
-print(f"WER: {results['wer']['mean_wer']:.3f}")
-```
-
-### Working with Views
-
-The operators work with FiftyOne views for targeted evaluation:
-
-```python
-import fiftyone as fo
-import fiftyone.operators as foo
-
-dataset = fo.load_dataset("your_dataset")
-
-# Get operator
-anls_op = foo.get_operator("@harpreetsahota/text-evaluation-metrics/compute_anls")
-
-# Create a view (e.g., only samples with confidence > 0.5)
-high_confidence_view = dataset.match(fo.F("confidence") > 0.5)
-
-# Execute operator on view using __call__
-result = anls_op(
-    high_confidence_view,
-    pred_field="prediction",
-    gt_field="ground_truth",
-    output_field="anls_high_confidence",
-    threshold=0.5,
-)
-
-print(f"High-confidence samples ANLS: {result['mean_anls']:.3f}")
-```
 
 ### Delegated Execution
 
-This won't be needed as these are fast operations.
-
-## Metric Descriptions
-
-### ANLS (Average Normalized Levenshtein Similarity)
-
-ANLS is the standard metric for OCR evaluation in VLMs. It:
-- Normalizes edit distance by string length
-- Applies a threshold (typically 0.5)
-- Returns 1.0 if similarity ≥ threshold, otherwise returns the similarity score
-- Is robust to minor OCR errors
-
-**Use case**: Primary evaluation metric for OCR tasks, VLM document understanding
-
-### Exact Match
-
-Binary metric that returns 1.0 only for perfect matches.
-
-**Use case**: Strict evaluation where partial credit isn't appropriate (e.g., form field extraction)
-
-### Normalized Similarity
-
-Continuous similarity without threshold, ranging from 0.0 to 1.0.
-
-**Use case**: Fine-grained analysis, ranking samples by similarity
-
-### CER (Character Error Rate)
-
-Ratio of character-level edits needed to transform prediction into ground truth.
-
-**Use case**: Detailed character-level error analysis, language-agnostic evaluation
-
-### WER (Word Error Rate)
-
-Ratio of word-level edits needed to transform prediction into ground truth.
-
-**Use case**: Speech recognition, word-level accuracy analysis
-
-## Field Management
-
-### Viewing Computed Fields
-
-```python
-# List all fields
-print(dataset.get_field_schema())
-
-# View specific metric values
-print(dataset.values("anls"))
-print(dataset.values("exact_match"))
-
-# Statistics
-print(dataset.mean("anls"))
-print(dataset.std("anls"))
-```
-
-### Deleting Fields
-
-```python
-# Delete specific fields
-dataset.delete_sample_fields(["anls", "exact_match", "cer"])
-
-# Or delete all evaluation fields at once
-eval_fields = [f for f in dataset.get_field_schema().keys() if f.startswith("eval_")]
-dataset.delete_sample_fields(eval_fields)
-```
+For large datasets, set `delegate=True` to run operations on a delegated service (requires delegated execution service to be running).
 
 ## Best Practices
 
@@ -266,7 +173,7 @@ dataset.delete_sample_fields(eval_fields)
 
 2. **Use Exact Match as a secondary metric**: Provides a strict accuracy baseline
 
-3. **Enable delegation for large datasets**: Operators auto-delegate for >1000 samples
+3. **Enable delegation for large datasets**: Set `delegate=True` for better performance on large datasets
 
 4. **Organize output fields**: Use consistent prefixes (e.g., `prediction_anls`, `prediction_cer`)
 
