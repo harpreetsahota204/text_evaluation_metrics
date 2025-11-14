@@ -14,6 +14,33 @@ from fiftyone.operators import types
 from .base import BaseTextEvaluationOperator
 
 
+def _handle_calling(
+    uri,
+    sample_collection,
+    pred_field,
+    gt_field,
+    output_field,
+    threshold,
+    case_sensitive,
+    delegate,
+):
+    """Handle calling the operator programmatically."""
+    ctx = dict(view=sample_collection.view())
+    params = dict(
+        pred_field=pred_field,
+        gt_field=gt_field,
+        output_field=output_field,
+        threshold=threshold,
+        case_sensitive=case_sensitive,
+    )
+    return foo.execute_operator(
+        uri,
+        ctx,
+        params=params,
+        delegate=delegate,
+    )
+
+
 class ComputeANLS(BaseTextEvaluationOperator):
     """Compute ANLS (Average Normalized Levenshtein Similarity) scores."""
     
@@ -57,20 +84,15 @@ class ComputeANLS(BaseTextEvaluationOperator):
         if output_field is None:
             output_field = f"{pred_field}_anls"
         
-        ctx = dict(view=sample_collection.view())
-        params = dict(
-            pred_field=pred_field,
-            gt_field=gt_field,
-            output_field=output_field,
-            threshold=threshold,
-            case_sensitive=case_sensitive,
-        )
-        
-        return foo.execute_operator(
-            self.uri, 
-            ctx, 
-            params=params,
-            request_delegation=delegate,
+        return _handle_calling(
+            self.uri,
+            sample_collection,
+            pred_field,
+            gt_field,
+            output_field,
+            threshold,
+            case_sensitive,
+            delegate,
         )
     
     def resolve_input(self, ctx):

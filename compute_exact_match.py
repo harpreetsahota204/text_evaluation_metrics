@@ -12,6 +12,33 @@ from fiftyone.operators import types
 from .base import BaseTextEvaluationOperator
 
 
+def _handle_calling(
+    uri,
+    sample_collection,
+    pred_field,
+    gt_field,
+    output_field,
+    case_sensitive,
+    strip_whitespace,
+    delegate,
+):
+    """Handle calling the operator programmatically."""
+    ctx = dict(view=sample_collection.view())
+    params = dict(
+        pred_field=pred_field,
+        gt_field=gt_field,
+        output_field=output_field,
+        case_sensitive=case_sensitive,
+        strip_whitespace=strip_whitespace,
+    )
+    return foo.execute_operator(
+        uri,
+        ctx,
+        params=params,
+        delegate=delegate,
+    )
+
+
 class ComputeExactMatch(BaseTextEvaluationOperator):
     """Compute Exact Match accuracy scores."""
     
@@ -56,20 +83,15 @@ class ComputeExactMatch(BaseTextEvaluationOperator):
         if output_field is None:
             output_field = f"{pred_field}_exact_match"
         
-        ctx = dict(view=sample_collection.view())
-        params = dict(
-            pred_field=pred_field,
-            gt_field=gt_field,
-            output_field=output_field,
-            case_sensitive=case_sensitive,
-            strip_whitespace=strip_whitespace,
-        )
-        
-        return foo.execute_operator(
-            self.uri, 
-            ctx, 
-            params=params,
-            request_delegation=delegate,
+        return _handle_calling(
+            self.uri,
+            sample_collection,
+            pred_field,
+            gt_field,
+            output_field,
+            case_sensitive,
+            strip_whitespace,
+            delegate,
         )
     
     def resolve_input(self, ctx):
