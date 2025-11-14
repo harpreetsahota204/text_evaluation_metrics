@@ -1,5 +1,7 @@
 # Text Evaluation Metrics for FiftyOne
 
+![image](text_eval_gif.gif)
+
 Operator plugin for evaluating text fields (StringFields) in FiftyOne datasets with standard VLM OCR metrics.
 
 ## Features
