@@ -11,3 +11,4 @@ operators:
   - compute_cer
   - compute_wer
   - compute_ted
+  - compute_semantic_similarity

@@ -13,6 +13,7 @@ from .operators import (
     ComputeCER,
     ComputeWER,
     ComputeTED,
+    ComputeSemanticSimilarity,
 )
 
 
@@ -24,3 +25,4 @@ def register(p):
     p.register(ComputeCER)
     p.register(ComputeWER)
     p.register(ComputeTED)
+    p.register(ComputeSemanticSimilarity)

@@ -3,4 +3,5 @@ python-Levenshtein
 apted
 beautifulsoup4
 mistletoe
+sentence-transformers
 

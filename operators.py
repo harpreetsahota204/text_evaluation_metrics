@@ -15,6 +15,7 @@ from .compute_normalized_similarity import ComputeNormalizedSimilarity
 from .compute_cer import ComputeCER
 from .compute_wer import ComputeWER
 from .compute_ted import ComputeTED
+from .compute_semantic_similarity import ComputeSemanticSimilarity
 
 
 __all__ = [
@@ -25,4 +26,5 @@ __all__ = [
     "ComputeCER",
     "ComputeWER",
     "ComputeTED",
+    "ComputeSemanticSimilarity",
 ]
