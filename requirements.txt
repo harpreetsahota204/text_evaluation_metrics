@@ -1,3 +1,6 @@
 fiftyone
 python-Levenshtein
+apted
+beautifulsoup4
+mistletoe
 

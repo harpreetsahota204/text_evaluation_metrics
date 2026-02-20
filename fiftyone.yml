@@ -10,3 +10,4 @@ operators:
   - compute_normalized_similarity
   - compute_cer
   - compute_wer
+  - compute_ted

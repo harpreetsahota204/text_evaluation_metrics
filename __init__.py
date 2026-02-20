@@ -12,6 +12,7 @@ from .operators import (
     ComputeNormalizedSimilarity,
     ComputeCER,
     ComputeWER,
+    ComputeTED,
 )
 
 
@@ -22,3 +23,4 @@ def register(p):
     p.register(ComputeNormalizedSimilarity)
     p.register(ComputeCER)
     p.register(ComputeWER)
+    p.register(ComputeTED)
