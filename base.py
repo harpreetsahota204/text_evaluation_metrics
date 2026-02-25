@@ -25,6 +25,8 @@ class BaseTextEvaluationOperator(foo.Operator):
     
     def _build_field_inputs(self, inputs, ctx):
         """Build common field selection inputs."""
+        inputs.view_target(ctx)
+
         string_fields = self._get_string_fields(ctx)
         
         if not string_fields:
