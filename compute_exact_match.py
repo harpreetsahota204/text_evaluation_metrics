@@ -50,6 +50,8 @@ class ComputeExactMatch(BaseTextEvaluationOperator):
             description="Compute binary exact match accuracy between prediction and ground truth",
             icon="/assets/spell-check-svgrepo-com.svg",
             dynamic=True,
+            allow_immediate_execution=True,
+            allow_delegated_execution=True,
         )
     
     def __call__(

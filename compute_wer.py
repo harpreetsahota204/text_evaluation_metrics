@@ -50,6 +50,8 @@ class ComputeWER(BaseTextEvaluationOperator):
             description="Compute Word Error Rate - ratio of word edits needed",
             icon="/assets/spell-check-svgrepo-com.svg",
             dynamic=True,
+            allow_immediate_execution=True,
+            allow_delegated_execution=True,
         )
     
     def __call__(

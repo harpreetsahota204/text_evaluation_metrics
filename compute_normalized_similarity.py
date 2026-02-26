@@ -50,6 +50,8 @@ class ComputeNormalizedSimilarity(BaseTextEvaluationOperator):
             description="Compute continuous normalized Levenshtein similarity (0.0-1.0) without threshold",
             icon="/assets/spell-check-svgrepo-com.svg",
             dynamic=True,
+            allow_immediate_execution=True,
+            allow_delegated_execution=True,
         )
     
     def __call__(

@@ -50,6 +50,8 @@ class ComputeCER(BaseTextEvaluationOperator):
             description="Compute Character Error Rate - ratio of character edits needed",
             icon="/assets/spell-check-svgrepo-com.svg",
             dynamic=True,
+            allow_immediate_execution=True,
+            allow_delegated_execution=True,
         )
     
     def __call__(

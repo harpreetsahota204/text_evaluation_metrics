@@ -52,6 +52,8 @@ class ComputeANLS(BaseTextEvaluationOperator):
             description="Compute ANLS (Average Normalized Levenshtein Similarity) - primary metric for VLM OCR evaluation",
             icon="/assets/spell-check-svgrepo-com.svg",
             dynamic=True,
+            allow_immediate_execution=True,
+            allow_delegated_execution=True,
         )
     
     def __call__(

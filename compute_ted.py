@@ -371,6 +371,8 @@ class ComputeTED(BaseTextEvaluationOperator):
             # changes any parameter, enabling the output_field default to
             # update live as pred_field is selected.
             dynamic=True,
+            allow_immediate_execution=True,
+            allow_delegated_execution=True,
         )
 
     def __call__(

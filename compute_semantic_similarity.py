@@ -148,6 +148,8 @@ class ComputeSemanticSimilarity(BaseTextEvaluationOperator):
             # dynamic=True re-runs resolve_input on each param change,
             # enabling the output_field default to update as pred_field is selected.
             dynamic=True,
+            allow_immediate_execution=True,
+            allow_delegated_execution=True,
         )
 
     def __call__(
