@@ -220,7 +220,10 @@ class ComputeSemanticSimilarity(BaseTextEvaluationOperator):
         )
         inputs.str(
             "output_field",
+            label="Output Field Name",
+            description="Name for the computed metric field",
             default=default_output,
+            required=True,
         )
 
         inputs.view(

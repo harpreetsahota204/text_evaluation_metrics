@@ -102,7 +102,10 @@ class ComputeWER(BaseTextEvaluationOperator):
         default_output = f"{pred_field}_wer" if pred_field else "wer"
         inputs.str(
             "output_field",
+            label="Output Field Name",
+            description="Name for the computed metric field",
             default=default_output,
+            required=True,
         )
         
         inputs.view(

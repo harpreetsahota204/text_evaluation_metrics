@@ -55,24 +55,23 @@ class BaseTextEvaluationOperator(foo.Operator):
             view=types.AutocompleteView(choices=string_fields)
         )
         
-        inputs.str(
-            "output_field",
-            label="Output Field Name",
-            description="Name for the computed metric field",
-            required=True,
-        )
-        
         return True
     
     def _get_text_pairs(self, ctx):
-        """Extract prediction and ground truth text pairs from the target view."""
+        """Extract prediction and ground truth text pairs from the target view.
+
+        None values (samples where the field is unset) are coerced to empty
+        strings so every downstream compute function receives a valid str.
+        An empty string produces the worst-case score for each metric, which
+        is the correct signal for missing data.
+        """
         pred_field = ctx.params.get("pred_field")
         gt_field = ctx.params.get("gt_field")
         target_view = ctx.target_view()
-        
-        gt_strings = target_view.values(gt_field)
-        pred_strings = target_view.values(pred_field)
-        
+
+        gt_strings = [v if v is not None else "" for v in target_view.values(gt_field)]
+        pred_strings = [v if v is not None else "" for v in target_view.values(pred_field)]
+
         return gt_strings, pred_strings, target_view
     
     def _save_scores(self, ctx, target_view, output_field, scores):

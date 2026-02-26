@@ -102,7 +102,10 @@ class ComputeNormalizedSimilarity(BaseTextEvaluationOperator):
         default_output = f"{pred_field}_similarity" if pred_field else "similarity"
         inputs.str(
             "output_field",
+            label="Output Field Name",
+            description="Name for the computed metric field",
             default=default_output,
+            required=True,
         )
         
         inputs.view(

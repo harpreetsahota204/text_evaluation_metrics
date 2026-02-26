@@ -442,7 +442,10 @@ class ComputeTED(BaseTextEvaluationOperator):
         default_output = f"{pred_field}_ted" if pred_field else "ted"
         inputs.str(
             "output_field",
+            label="Output Field Name",
+            description="Name for the computed metric field",
             default=default_output,
+            required=True,
         )
 
         inputs.view(
@@ -461,7 +464,7 @@ class ComputeTED(BaseTextEvaluationOperator):
             ),
             required=True,
             default="json",
-            view=types.RadioGroupView(),
+            view=types.RadioView(),
         )
 
         return types.Property(inputs)

@@ -106,7 +106,10 @@ class ComputeExactMatch(BaseTextEvaluationOperator):
         default_output = f"{pred_field}_exact_match" if pred_field else "exact_match"
         inputs.str(
             "output_field",
+            label="Output Field Name",
+            description="Name for the computed metric field",
             default=default_output,
+            required=True,
         )
         
         inputs.view(
